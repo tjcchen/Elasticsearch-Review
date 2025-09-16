@@ -3,37 +3,30 @@
 import { useState } from 'react';
 import SearchBox from '@/components/SearchBox';
 import SearchResults from '@/components/SearchResults';
-import { SearchResult } from '@/types/search';
+import { City } from '@/types/cities';
 
 export default function Home() {
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState('');
 
   const handleSearch = async (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      return;
-    }
-
     setLoading(true);
     setQuery(searchQuery);
 
     try {
-      const response = await fetch('/api/search', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: searchQuery }),
-      });
+      const url = searchQuery.trim() 
+        ? `/api/cities?q=${encodeURIComponent(searchQuery)}&limit=20`
+        : '/api/cities?limit=20';
+        
+      const response = await fetch(url);
 
       if (!response.ok) {
         throw new Error('Search failed');
       }
 
       const data = await response.json();
-      setResults(data.hits?.hits || []);
+      setResults(data.cities || []);
     } catch (error) {
       console.error('Search error:', error);
       setResults([]);

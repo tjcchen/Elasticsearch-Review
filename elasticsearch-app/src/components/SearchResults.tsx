@@ -1,9 +1,9 @@
 'use client';
 
-import { SearchResult } from '@/types/search';
+import { City } from '@/types/cities';
 
 interface SearchResultsProps {
-  results: SearchResult[];
+  results: City[];
   loading: boolean;
   query: string;
 }
@@ -69,45 +69,40 @@ export default function SearchResults({ results, loading, query }: SearchResults
       </div>
 
       <div className="space-y-4">
-        {results.map((result, index) => (
+        {results.map((city, index) => (
           <div
-            key={result._id}
+            key={city.id}
             className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6 border border-gray-100 dark:border-gray-700"
           >
             <div className="flex items-start justify-between mb-3">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer">
-                {result._source.title || `Document ${result._id}`}
+                {city.name}, {city.state}
               </h3>
               <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
                 <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
-                  Score: {result._score.toFixed(2)}
+                  Pop: {city.population.toLocaleString()}
                 </span>
               </div>
             </div>
 
             <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-              {result._source.content?.substring(0, 300)}
-              {result._source.content && result._source.content.length > 300 && '...'}
+              {city.description}
             </p>
 
             <div className="flex items-center justify-between">
               <div className="flex flex-wrap gap-2">
-                {result._source.tags?.map((tag, tagIndex) => (
-                  <span
-                    key={tagIndex}
-                    className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full"
-                  >
-                    {tag}
-                  </span>
-                ))}
+                <span className="inline-block bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full">
+                  {city.state}
+                </span>
+                <span className="inline-block bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs px-2 py-1 rounded-full">
+                  City
+                </span>
               </div>
               
               <div className="text-xs text-gray-500 dark:text-gray-400">
-                {result._source.created_at && (
-                  <span>
-                    Created: {new Date(result._source.created_at).toLocaleDateString()}
-                  </span>
-                )}
+                <span>
+                  ID: {city.id}
+                </span>
               </div>
             </div>
 
