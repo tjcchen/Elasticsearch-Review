@@ -34,38 +34,32 @@ export const GET = async (req: NextRequest) => {
     let cities: City[];
 
     if (!query.trim()) {
-      // If no query, return all cities
-      cities = await sql`
-        SELECT id, name, state, population, description
-        FROM cities
-        ORDER BY population DESC
-        LIMIT ${limit}
-      `;
-    } else {
-      // Search cities by name, state, or description
-      cities = await sql`
-        SELECT id, name, state, population, description
-        FROM cities
-        WHERE 
-          name ILIKE ${'%' + query + '%'} OR
-          state ILIKE ${'%' + query + '%'} OR
-          description ILIKE ${'%' + query + '%'}
-        ORDER BY 
-          CASE 
-            WHEN name ILIKE ${'%' + query + '%'} THEN 1
-            WHEN state ILIKE ${'%' + query + '%'} THEN 2
-            ELSE 3
-          END,
-          population DESC
-        LIMIT ${limit}
-      `;
+      return NextResponse.json({ cities: [] });
     }
+
+    // Search cities by name, state, or description (case-insensitive)
+    cities = await sql`
+      SELECT id, name, state, population, description
+      FROM cities 
+      WHERE 
+        LOWER(name) LIKE LOWER(${'%' + query + '%'}) OR
+        LOWER(state) LIKE LOWER(${'%' + query + '%'}) OR
+        LOWER(description) LIKE LOWER(${'%' + query + '%'})
+      ORDER BY 
+        CASE 
+          WHEN LOWER(name) LIKE LOWER(${query + '%'}) THEN 1
+          WHEN LOWER(name) LIKE LOWER(${'%' + query + '%'}) THEN 2
+          ELSE 3
+        END,
+        population DESC
+      LIMIT ${limit}
+    `;
 
     result = {
       cities: cities as City[],
       total: cities.length,
       statusCode: 200,
-      msg: query ? `Found ${cities.length} cities matching "${query}"` : `Retrieved ${cities.length} cities`
+      msg: `Found ${cities.length} cities matching "${query}"`
     };
 
     return NextResponse.json(result);
