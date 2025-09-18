@@ -269,21 +269,31 @@ export const POST = async (req: NextRequest) => {
 export const GET = async (req: NextRequest) => {
   try {
     const indexName = 'cities';
-    
-    // Check if index exists
-    const existsUrl = `https://127.0.0.1:9200/${indexName}`;
+    const https = require('https');
     const auth = Buffer.from('elastic:PzmHvsuMo9PyUS_5Abxp').toString('base64');
     
-    const existsResponse = await fetch(existsUrl, {
-      method: 'HEAD',
-      headers: {
-        'Authorization': `Basic ${auth}`
-      },
-      // @ts-ignore
-      rejectUnauthorized: false
+    // Check if index exists using HEAD request
+    const existsCheck = await new Promise((resolve, reject) => {
+      const options = {
+        hostname: '127.0.0.1',
+        port: 9200,
+        path: `/${indexName}`,
+        method: 'HEAD',
+        headers: {
+          'Authorization': `Basic ${auth}`
+        },
+        rejectUnauthorized: false
+      };
+
+      const req = https.request(options, (res: any) => {
+        resolve(res.statusCode);
+      });
+
+      req.on('error', reject);
+      req.end();
     });
     
-    if (existsResponse.status === 404) {
+    if (existsCheck === 404) {
       return NextResponse.json({
         indexed: false,
         message: "Cities index does not exist. Run POST /api/cities/sync-direct to create it.",
@@ -292,23 +302,45 @@ export const GET = async (req: NextRequest) => {
     }
 
     // Get document count
-    const countUrl = `https://127.0.0.1:9200/${indexName}/_count`;
-    const countResponse = await fetch(countUrl, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Basic ${auth}`,
-        'Accept': 'application/json'
-      },
-      // @ts-ignore
-      rejectUnauthorized: false
-    });
+    const countResult = await new Promise((resolve, reject) => {
+      const options = {
+        hostname: '127.0.0.1',
+        port: 9200,
+        path: `/${indexName}/_count`,
+        method: 'GET',
+        headers: {
+          'Authorization': `Basic ${auth}`,
+          'Accept': 'application/json'
+        },
+        rejectUnauthorized: false
+      };
 
-    const countResult = await countResponse.json();
+      const req = https.request(options, (res: any) => {
+        let data = '';
+        res.on('data', (chunk: any) => data += chunk);
+        res.on('end', () => {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            try {
+              resolve(JSON.parse(data));
+            } catch (e) {
+              reject(new Error(`Failed to parse count response: ${data}`));
+            }
+          } else {
+            reject(new Error(`Count request failed: ${res.statusCode} ${data}`));
+          }
+        });
+      });
+
+      req.on('error', reject);
+      req.end();
+    });
+    
+    const countResponse = countResult as any;
     
     return NextResponse.json({
       indexed: true,
       message: "Cities index exists and is ready",
-      count: countResult.count || 0
+      count: countResponse.count || 0
     });
 
   } catch (error) {
