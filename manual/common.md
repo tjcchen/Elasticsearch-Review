@@ -34,4 +34,22 @@ GET cities/_search
     }
   }
 }
+
+#########################################################
+# Sync cities data from PostgreSQL to Elasticsearch
+#########################################################
+# Check Current Sync Status
+curl http://localhost:3001/api/cities/sync-direct
+
+# Run the Cities Data Sync
+curl -X POST http://localhost:3001/api/cities/sync-direct
+
+#########################################################
+# Search cities using Elasticsearch
+#########################################################
+# Your current PostgreSQL endpoint
+curl "http://localhost:3001/api/cities?q=tacoma&limit=5"
+
+# New Elasticsearch endpoint (drop-in replacement)
+curl "http://localhost:3001/api/cities-es?q=tacoma&limit=5"
 ```
