@@ -23,6 +23,7 @@ docker exec -it elasticsearch /bin/bash -c \
 
 # 4. Test ES connection
 ## Security in enabled, use curl with username and password
+# eg: curl -u elastic:PzmHvsuMo9PyUS_5Abxp -k https://localhost:9200/
 curl -u elastic:YOUR_NEW_PASSWORD -k https://localhost:9200/
 
 ## Security in disabled, use curl without username and password
