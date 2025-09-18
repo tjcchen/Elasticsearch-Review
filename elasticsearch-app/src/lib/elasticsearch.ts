@@ -1,16 +1,18 @@
 import { Client } from '@elastic/elasticsearch';
 
-// Elasticsearch client configuration
+// Elasticsearch client configuration  
 const client = new Client({
-  node: process.env.ELASTICSEARCH_URL || 'http://localhost:9200',
+  node: 'https://127.0.0.1:9200',
   auth: {
-    username: process.env.ELASTICSEARCH_USERNAME || 'elastic',
-    password: process.env.ELASTICSEARCH_PASSWORD || 'changeme',
+    username: 'elastic',
+    password: 'PzmHvsuMo9PyUS_5Abxp',
   },
   // For development with self-signed certificates
   tls: {
     rejectUnauthorized: false,
   },
+  requestTimeout: 30000,
+  pingTimeout: 3000
 });
 
 export default client;
