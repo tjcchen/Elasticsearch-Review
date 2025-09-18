@@ -158,4 +158,27 @@ GET my-first-index/_search
 {
   "query": { "match_all": {} }
 }
+
+# Full-text search in title
+GET my-first-index/_search
+{
+  "query": { "match": { "title": "hello" } }
+}
+
+# Exact match on keyword field
+GET my-first-index/_search
+{
+  "query": { "term": { "tags": "intro" } }
+}
+
+# Combine full-text + filter
+GET my-first-index/_search
+{
+  "query": {
+    "bool": {
+      "must":   [ { "match": { "title": "hello" }} ],
+      "filter": [ { "term": { "tags": "demo" }} ]
+    }
+  }
+}
 ```
