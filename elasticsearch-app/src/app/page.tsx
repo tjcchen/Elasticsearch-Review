@@ -16,8 +16,8 @@ export default function Home() {
 
     try {
       const url = searchQuery.trim() 
-        ? `/api/cities?q=${encodeURIComponent(searchQuery)}&limit=20`
-        : '/api/cities?limit=20';
+        ? `/api/cities-es?q=${encodeURIComponent(searchQuery)}&limit=20`
+        : '/api/cities-es?limit=20';
         
       const response = await fetch(url);
 

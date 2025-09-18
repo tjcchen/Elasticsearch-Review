@@ -80,7 +80,7 @@ export default function SearchBox({ onSearch, loading }: SearchBoxProps) {
 
       setSuggestionsLoading(true);
       try {
-        const response = await fetch(`/api/cities?q=${encodeURIComponent(debouncedQuery)}&limit=5`);
+        const response = await fetch(`/api/cities-es?q=${encodeURIComponent(debouncedQuery)}&limit=5`);
         if (response.ok) {
           const data = await response.json();
           setSuggestions(data.cities || []);

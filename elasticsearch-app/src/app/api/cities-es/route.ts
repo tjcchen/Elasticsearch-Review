@@ -30,18 +30,23 @@ async function esSearch(query: string, limit: number = 10) {
     query: query.trim() ? {
       bool: {
         should: [
-          // Exact match on name (highest priority)
-          { match: { "name.keyword": { query, boost: 3 } } },
+          // Prefix match on name (for partial matches like "sea" -> "Seattle")
+          { prefix: { name: { value: query.toLowerCase(), boost: 3 } } },
+          // Wildcard match on name
+          { wildcard: { name: { value: `*${query.toLowerCase()}*`, boost: 2.5 } } },
           // Fuzzy match on name
           { match: { name: { query, fuzziness: "AUTO", boost: 2 } } },
+          // Exact match on name (highest priority for full matches)
+          { match: { "name.keyword": { query, boost: 4 } } },
           // Match on state
           { match: { state: { query, boost: 1.5 } } },
+          // Prefix match on state
+          { prefix: { state: { value: query.toLowerCase(), boost: 1.3 } } },
           // Match on description
           { match: { description: { query, boost: 1 } } },
           // Match on combined location field
           { match: { location: { query, boost: 2 } } }
-        ],
-        minimum_should_match: 1
+        ]
       }
     } : {
       match_all: {}
