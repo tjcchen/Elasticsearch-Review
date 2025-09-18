@@ -154,7 +154,7 @@ export const POST = async (req: NextRequest) => {
     const limit = filters.limit || 10;
 
     // Build more complex Elasticsearch query
-    const searchBody = {
+    const searchBody: any = {
       size: limit,
       query: {
         bool: {
