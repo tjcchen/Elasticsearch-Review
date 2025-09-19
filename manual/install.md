@@ -1,11 +1,19 @@
 ## Install Elasticsearch
 
 ```bash
-# 1. Install with docker
+# 1. Install or start with docker
 docker run -d \
   --name elasticsearch \
   -p 9200:9200 \
   -e "discovery.type=single-node" \
+  docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+
+# no security setup (for development only)
+docker run -d \
+  --name elasticsearch \
+  -p 9200:9200 \
+  -e "discovery.type=single-node" \
+  -e "xpack.security.enabled=false" \
   docker.elastic.co/elasticsearch/elasticsearch:8.15.3
 
 # 2. Other docker commands
