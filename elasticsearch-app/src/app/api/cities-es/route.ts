@@ -24,12 +24,15 @@ async function esSearch(query: string, limit: number = 10) {
   const https = require('https');
   const auth = Buffer.from('elastic:PzmHvsuMo9PyUS_5Abxp').toString('base64');
   
+  // Full Text Search
+  // Full-text search is a way of searching natural language text (like names, descriptions, articles) by breaking text into tokens/words and ranking results by relevance, not just exact matches.
   // Build Elasticsearch query
   const searchBody = {
     size: limit,
     query: query.trim() ? {
       bool: {
         should: [
+          // Below are different “match strategies” applied to query against your fields, with boosts to rank results.
           // Prefix match on name (for partial matches like "sea" -> "Seattle")
           { prefix: { name: { value: query.toLowerCase(), boost: 3 } } },
           // Wildcard match on name
