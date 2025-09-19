@@ -1,7 +1,7 @@
 ## Common Commands
 
 ```bash
-# Check Elasticsearch indices (tables)
+# Check Elasticsearch indices (tables) - Kibana
 GET _cat/indices?v                 # List all indices
 GET _cat/indices/cities?v          # List cities index
 GET _cat/indices/my-first-index?v  # List my-first-index
